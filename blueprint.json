@@ -1,0 +1,330 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "meta": {
+    "title": "Copayapu, Sabores de Atacama",
+    "description": "Tienda WooCommerce de referencia para la Evaluación N.º 3 de E-Commerce (INACAP). Negocio ficticio.",
+    "author": "Mataes3010",
+    "categories": [
+      "WooCommerce"
+    ]
+  },
+  "landingPage": "/",
+  "preferredVersions": {
+    "php": "8.3",
+    "wp": "latest"
+  },
+  "features": {
+    "networking": true
+  },
+  "login": true,
+  "steps": [
+    {
+      "step": "setSiteOptions",
+      "options": {
+        "blogname": "Copayapu, Sabores de Atacama",
+        "blogdescription": "Productos de los valles de Copiapó y del Huasco",
+        "timezone_string": "America/Santiago",
+        "date_format": "d/m/Y",
+        "permalink_structure": "/%postname%/"
+      }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "woocommerce"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "transbank-webpay-plus-rest"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "woocommerce-mercadopago"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "bluex-for-woocommerce"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "calculo-de-despacho-via-starken-para-woocommerce"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "facto-facturacioacuten-electroacutenica"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "installTheme",
+      "themeData": {
+        "resource": "wordpress.org/themes",
+        "slug": "storefront"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "setSiteLanguage",
+      "language": "es_CL"
+    },
+    {
+      "step": "mkdir",
+      "path": "/wordpress/wp-content/copayapu/assets"
+    },
+    {
+      "step": "mkdir",
+      "path": "/wordpress/wp-content/copayapu/setup"
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/assets/aceite1l.png",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/assets/aceite1l.png"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/assets/aceite500.png",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/assets/aceite500.png"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/assets/aceitunas.png",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/assets/aceitunas.png"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/assets/arrope.png",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/assets/arrope.png"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/assets/banner.png",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/assets/banner.png"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/assets/cfaena.png",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/assets/cfaena.png"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/assets/cflorido.png",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/assets/cflorido.png"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/assets/chanar.png",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/assets/chanar.png"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/assets/cobre.png",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/assets/cobre.png"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/assets/cvalle.png",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/assets/cvalle.png"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/assets/logo.png",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/assets/logo.png"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/assets/miel.png",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/assets/miel.png"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/assets/nueces.png",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/assets/nueces.png"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/assets/pajarete.png",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/assets/pajarete.png"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/assets/pasas.png",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/assets/pasas.png"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/assets/pasasm.png",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/assets/pasasm.png"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/assets/sal.png",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/assets/sal.png"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/setup/01-configuracion.php",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/setup/01-configuracion.php"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/setup/02-catalogo.php",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/setup/02-catalogo.php"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/setup/03-operacion.php",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/setup/03-operacion.php"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/setup/04-ajustes-visuales.php",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/setup/04-ajustes-visuales.php"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/setup/05-pagos.php",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/setup/05-pagos.php"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/setup/copayapu-checkout.php",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/setup/copayapu-checkout.php"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/mu-plugins/copayapu-checkout.php",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/setup/copayapu-checkout.php"
+      }
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php define('CPY_ASSETS', '/wordpress/wp-content/copayapu/assets/'); define('CPY_SETUP', '/wordpress/wp-content/copayapu/setup/'); require_once 'wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; require '/wordpress/wp-content/copayapu/setup/01-configuracion.php';"
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php define('CPY_ASSETS', '/wordpress/wp-content/copayapu/assets/'); define('CPY_SETUP', '/wordpress/wp-content/copayapu/setup/'); require_once 'wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; require '/wordpress/wp-content/copayapu/setup/02-catalogo.php';"
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php define('CPY_ASSETS', '/wordpress/wp-content/copayapu/assets/'); define('CPY_SETUP', '/wordpress/wp-content/copayapu/setup/'); require_once 'wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; require '/wordpress/wp-content/copayapu/setup/03-operacion.php';"
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php define('CPY_ASSETS', '/wordpress/wp-content/copayapu/assets/'); define('CPY_SETUP', '/wordpress/wp-content/copayapu/setup/'); require_once 'wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; require '/wordpress/wp-content/copayapu/setup/04-ajustes-visuales.php';"
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php define('CPY_ASSETS', '/wordpress/wp-content/copayapu/assets/'); define('CPY_SETUP', '/wordpress/wp-content/copayapu/setup/'); require_once 'wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; require '/wordpress/wp-content/copayapu/setup/05-pagos.php';"
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php require_once 'wordpress/wp-load.php'; flush_rewrite_rules( true );"
+    }
+  ]
+}
