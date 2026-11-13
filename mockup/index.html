@@ -1,0 +1,954 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Prototipo navegable de la tienda eCommerce de Copayapu, Sabores de Atacama (negocio ficticio, proyecto académico).">
+<title>Copayapu Prototipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: tienda de una columna centrada (máx. 1180 px) bajo una barra de prototipo oscura; tarjetas solo donde separan objetos (producto, resumen, paneles). Identidad deliberadamente de un solo tema (marca clara). */
+:root{
+  --bg:#FFFFFF; --surface:#F4F5EF; --surface-2:#E8EBDD; --line:#D8DCCD;
+  --ink:#1E2619; --muted:#5A6351;
+  --olive:#46591F; --olive-d:#2F3D14; --olive-l:#E6EBD6;
+  --flor:#B4245C; --flor-d:#8E1A48; --flor-l:#FAE5EE;
+  --cobre:#A55D27; --cobre-l:#F5E6D8;
+  --ok:#2B7647; --ok-l:#E2F1E7; --warn:#9A6210; --warn-l:#FBF0DC;
+  --proto:#191D22; --proto-fg:#E8EBEF; --proto-mut:#A2AAB4;
+  --rf:#2552B8; --rf-l:#E3EBFB;
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Figtree","Segoe UI",system-ui,sans-serif;
+  --r:10px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--proto)}
+a{color:inherit}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--rf);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.num{font-variant-numeric:tabular-nums}
+
+/* Barra del prototipo */
+.proto{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--proto);color:var(--proto-fg)}
+.proto .wrap{display:flex;align-items:center;gap:16px;padding-block:8px}
+.proto-name{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--proto-mut);white-space:nowrap}
+.proto-nav{display:flex;gap:4px;overflow-x:auto;flex:1;min-width:0;scrollbar-width:thin}
+.proto-nav a{color:var(--proto-fg);text-decoration:none;font-size:13px;padding:5px 10px;border-radius:999px;white-space:nowrap}
+.proto-nav a:hover{background:#2A3038}
+.proto-nav a[aria-current="page"]{background:var(--proto-fg);color:var(--proto)}
+.proto-nav a span{color:var(--proto-mut);margin-right:4px}
+.proto-nav a[aria-current="page"] span{color:#5A6270}
+.proto label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--proto-mut);white-space:nowrap;cursor:pointer}
+.proto input{accent-color:var(--rf)}
+
+/* Etiqueta de requisito */
+.rf{display:inline-block;font:600 10.5px/1 var(--f-body);letter-spacing:.03em;color:var(--rf);background:var(--rf-l);border:1px solid #BFD0F4;border-radius:4px;padding:3px 5px;vertical-align:middle;margin-left:6px;white-space:nowrap}
+body.no-rf .rf{display:none}
+
+/* Encabezado de la tienda */
+.announce{background:var(--olive-d);color:#EEF2E2;font-size:13px}
+.announce .wrap{padding-block:7px;text-align:center}
+.site{border-bottom:1px solid var(--line);background:var(--bg)}
+.hdr{display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;padding-block:14px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo b{display:block;font-family:var(--f-display);font-size:23px;font-weight:800;letter-spacing:-.01em;color:var(--olive-d)}
+.logo small{display:block;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:-2px}
+.search{position:relative;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:0 14px;min-width:0}
+.search input{border:0;background:transparent;padding:10px 0;flex:1;min-width:0;outline:none}
+.suggest{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);box-shadow:0 12px 30px rgba(30,38,25,.12);padding:6px;z-index:20}
+.suggest a{display:flex;justify-content:space-between;gap:12px;padding:8px 10px;border-radius:8px;text-decoration:none;font-size:14px}
+.suggest a:hover{background:var(--surface)}
+.suggest small{color:var(--muted)}
+.suggest .sg-h{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:6px 10px 2px}
+.hicons{display:flex;gap:18px;align-items:center;font-size:14px;font-weight:600}
+.hicons a{text-decoration:none;display:flex;align-items:center;gap:6px}
+.count{background:var(--flor);color:#fff;border-radius:999px;font-size:11.5px;padding:1px 7px}
+.cats{border-top:1px solid var(--line)}
+.cats .wrap{display:flex;gap:22px;overflow-x:auto;padding-block:10px;font-size:14px;font-weight:500}
+.cats a{text-decoration:none;white-space:nowrap;color:var(--muted)}
+.cats a:hover,.cats a.on{color:var(--olive-d)}
+.cats a.hl{color:var(--flor);font-weight:700}
+
+/* Botones */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:11px 20px;font-weight:700;font-size:14.5px;text-decoration:none;border:1.5px solid transparent;cursor:pointer;white-space:nowrap}
+.btn-p{background:var(--olive);color:#fff}
+.btn-p:hover{background:var(--olive-d)}
+.btn-f{background:var(--flor);color:#fff}
+.btn-f:hover{background:var(--flor-d)}
+.btn-o{border-color:var(--olive);color:var(--olive-d);background:var(--bg)}
+.btn-g{border-color:var(--line);background:var(--bg);color:var(--ink);font-weight:600}
+.btn-w{background:var(--ok);color:#fff}
+.btn-block{width:100%}
+
+/* Secciones */
+main{display:block}
+.sec{padding-block:36px}
+.sec-h{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.sec-h h2{font-size:26px}
+.sec-h p{margin:4px 0 0;color:var(--muted)}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--olive);font-weight:700}
+.crumb{font-size:13px;color:var(--muted);padding-block:16px 0}
+.crumb a{text-decoration:none}
+
+/* Héroe */
+.hero{display:grid;grid-template-columns:1.25fr 1fr;gap:28px;padding-block:34px 10px;align-items:stretch}
+.hero-copy{display:flex;flex-direction:column;justify-content:center;gap:16px}
+.hero h1{font-size:44px;font-weight:800;letter-spacing:-.02em;color:var(--olive-d)}
+.hero p{font-size:17px;color:var(--muted);margin:0;max-width:56ch}
+.hero-ctas{display:flex;gap:10px;flex-wrap:wrap}
+.hero-facts{display:flex;gap:22px;flex-wrap:wrap;font-size:13.5px;color:var(--muted)}
+.hero-facts b{display:block;font-family:var(--f-display);font-size:20px;color:var(--ink)}
+.camp{position:relative;border-radius:16px;background:var(--flor);color:#fff;padding:26px;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;min-height:300px}
+.camp h2{font-size:30px;max-width:13ch}
+.camp p{margin:8px 0 0;max-width:30ch;color:#FCE3EC}
+.camp .code{display:inline-block;background:#fff;color:var(--flor-d);font-weight:800;letter-spacing:.06em;border-radius:6px;padding:4px 10px;margin-top:10px}
+.camp svg{position:absolute;right:-30px;bottom:-30px;width:250px;opacity:.95}
+.camp>div,.camp .btn{position:relative;z-index:1}
+.camp .btn{align-self:flex-start;background:#fff;color:var(--flor-d)}
+
+/* Categorías */
+.catgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.cat{text-decoration:none;display:flex;flex-direction:column;gap:8px;font-weight:600;font-size:14px}
+.cat .ph{border-radius:12px;overflow:hidden;aspect-ratio:1/1;max-width:100%}
+.cat small{color:var(--muted);font-weight:500}
+
+/* Tarjetas de producto */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.grid.g3{grid-template-columns:repeat(3,1fr)}
+.card{display:flex;flex-direction:column;min-width:0}
+.card-img{position:relative;display:block;border-radius:12px;overflow:hidden;aspect-ratio:1/1;max-width:100%}
+.card-img svg,.cat svg,.thumb svg{display:block;width:100%;height:100%}
+.badge{position:absolute;top:10px;left:10px;background:var(--bg);color:var(--ink);font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 9px}
+.badge.adult{left:auto;right:10px;background:var(--ink);color:#fff}
+.badge.low{color:var(--warn)}
+.card-body{display:flex;flex-direction:column;gap:3px;padding-top:10px;flex:1}
+.origin{font-size:12px;color:var(--olive);font-weight:600;letter-spacing:.02em}
+.card-title{font-weight:600;text-decoration:none;line-height:1.3}
+.stars{font-size:13px;color:var(--cobre);font-weight:600}
+.stars span{color:var(--muted);font-weight:400}
+.card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:6px}
+.price{font-size:17px;font-variant-numeric:tabular-nums}
+.add{border:1.5px solid var(--olive);background:var(--bg);color:var(--olive-d);border-radius:999px;padding:6px 13px;font-weight:700;font-size:13px;cursor:pointer}
+.add:hover{background:var(--olive);color:#fff}
+.why{font-size:12px;color:var(--muted);background:var(--surface);border-radius:6px;padding:4px 8px;margin-top:8px}
+.reco{background:var(--olive-l);border-radius:16px;padding:22px}
+.reco .sec-h{margin-bottom:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;border-radius:999px;padding:4px 11px;background:var(--bg);border:1px solid var(--line)}
+.linkish{font-size:13px;color:var(--olive-d);font-weight:600}
+
+/* Social */
+.ugc{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.ugc figure{margin:0;position:relative;border-radius:12px;overflow:hidden;aspect-ratio:4/5;max-width:100%}
+.ugc figure svg{width:100%;height:100%;display:block}
+.ugc figcaption{position:absolute;inset:auto 0 0 0;padding:8px;background:linear-gradient(transparent,rgba(20,24,16,.72));color:#fff;font-size:12px;display:flex;justify-content:space-between;align-items:end;gap:6px}
+.ugc .tag{background:#fff;color:var(--ink);border-radius:999px;padding:2px 8px;font-weight:700;font-size:11px;white-space:nowrap}
+.social-cta{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:14px;padding:14px 18px;border:1px dashed var(--flor);border-radius:12px;background:var(--flor-l)}
+
+/* Confianza */
+.trust{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding-block:20px}
+.trust div{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--muted)}
+.trust b{display:block;color:var(--ink);font-size:14px}
+.ico{flex:none;width:34px;height:34px;border-radius:50%;background:var(--olive-l);display:grid;place-items:center;color:var(--olive-d)}
+.news{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center;background:var(--surface);border-radius:16px;padding:24px}
+.news form{display:flex;flex-direction:column;gap:10px}
+.news .row{display:flex;gap:8px}
+.field{border:1px solid var(--line);border-radius:999px;padding:10px 14px;background:var(--bg);flex:1;min-width:0}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted)}
+.check input{margin-top:3px;accent-color:var(--olive)}
+
+/* Pie */
+footer{background:var(--olive-d);color:#DCE3CB;margin-top:40px}
+footer .wrap{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:24px;padding-block:32px;font-size:14px}
+footer h4{font-family:var(--f-display);color:#fff;margin:0 0 8px;font-size:15px}
+footer ul{list-style:none;padding:0;margin:0;display:grid;gap:5px}
+footer a{text-decoration:none}
+.legal{border-top:1px solid #4A5A2C}
+.legal .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:12px;font-size:12.5px;color:#B8C3A0;grid-template-columns:none}
+.wa{position:fixed;right:max(18px,calc(env(safe-area-inset-right,0px) + 18px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;align-items:center;gap:8px;background:var(--ok);color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:11px 16px;border-radius:999px;box-shadow:0 8px 20px rgba(20,60,35,.3)}
+
+/* Catálogo */
+.cat-layout{display:grid;grid-template-columns:250px 1fr;gap:28px;padding-block:18px 10px}
+.filters{display:flex;flex-direction:column;gap:18px;font-size:14px}
+.filters h3{font-size:15px;margin-bottom:8px;font-family:var(--f-body);font-weight:700}
+.filters label{display:flex;justify-content:space-between;gap:8px;padding:3px 0;cursor:pointer}
+.filters label span{display:flex;gap:8px;align-items:center}
+.filters input[type=checkbox]{accent-color:var(--olive);width:16px;height:16px}
+.filters small{color:var(--muted)}
+.range{display:flex;gap:8px;align-items:center}
+.range input{width:100%;border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.toolbar select{border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:var(--bg)}
+.active-f{display:flex;gap:6px;flex-wrap:wrap}
+.active-f .chip{background:var(--olive-l);border-color:transparent}
+
+/* Ficha */
+.pdp{display:grid;grid-template-columns:1.05fr 1fr;gap:36px;padding-block:18px 8px}
+.gallery{display:grid;grid-template-columns:72px 1fr;gap:12px}
+.thumbs{display:flex;flex-direction:column;gap:10px}
+.thumb{border-radius:10px;overflow:hidden;aspect-ratio:1/1;border:2px solid transparent}
+.thumb.on{border-color:var(--olive)}
+.main-img{border-radius:16px;overflow:hidden;aspect-ratio:1/1;max-width:100%}
+.main-img svg{width:100%;height:100%;display:block}
+.pinfo{display:flex;flex-direction:column;gap:14px}
+.pinfo h1{font-size:32px;letter-spacing:-.01em}
+.pprice{display:flex;align-items:baseline;gap:12px}
+.pprice b{font-family:var(--f-display);font-size:32px}
+.pprice small{color:var(--muted)}
+.stock{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--ok);font-weight:600}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--ok);flex:none}
+.buy{display:flex;gap:10px;flex-wrap:wrap}
+.qty{display:flex;align-items:center;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.qty button{border:0;background:transparent;width:38px;height:42px;font-size:18px;cursor:pointer}
+.qty span{min-width:26px;text-align:center;font-weight:700}
+.box{border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.ship-row{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:4px 0}
+.ship-row small{color:var(--muted)}
+.share{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13.5px}
+.share a{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 11px;text-decoration:none;font-weight:600}
+.specs{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:14px;margin:0}
+.specs dt{color:var(--muted)}
+.specs dd{margin:0;font-weight:600}
+.bundle{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;background:var(--surface);border-radius:16px;padding:20px}
+.bundle-items{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.bundle-items .bi{width:96px;text-align:center;font-size:12px}
+.bundle-items .bi div{border-radius:10px;overflow:hidden;aspect-ratio:1/1;margin-bottom:4px}
+.bundle-items .plus{font-size:22px;color:var(--muted)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow-x:auto}
+.tabs span{padding:10px 14px;font-weight:600;color:var(--muted);white-space:nowrap}
+.tabs span.on{color:var(--olive-d);border-bottom:2.5px solid var(--olive)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.rv-sum{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center}
+.rv-big{font-family:var(--f-display);font-size:48px;font-weight:800;line-height:1}
+.bars{display:grid;gap:4px;font-size:12.5px}
+.bar{display:grid;grid-template-columns:28px 1fr 36px;gap:8px;align-items:center}
+.bar i{display:block;height:7px;border-radius:4px;background:var(--surface-2);position:relative;overflow:hidden}
+.bar i b{position:absolute;inset:0 auto 0 0;background:var(--cobre);border-radius:4px}
+.review{border-top:1px solid var(--line);padding-block:14px;font-size:14px}
+.review header{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.verified{font-size:12px;color:var(--ok);font-weight:700}
+.rv-photos{display:flex;gap:8px;margin-top:8px}
+.rv-photos div{width:64px;height:64px;border-radius:8px;overflow:hidden}
+.rv-photos svg{width:100%;height:100%}
+
+/* Carrito */
+.cart-layout{display:grid;grid-template-columns:1fr 360px;gap:28px;padding-block:18px 8px;align-items:start}
+.citem{display:grid;grid-template-columns:84px 1fr auto auto;gap:16px;align-items:center;padding-block:14px;border-bottom:1px solid var(--line)}
+.citem .ph{width:84px;height:84px;border-radius:10px;overflow:hidden}
+.citem .ph svg{width:100%;height:100%}
+.citem small{color:var(--muted)}
+.note18{display:inline-block;margin-top:4px;font-size:12px;background:var(--warn-l);color:var(--warn);border-radius:6px;padding:2px 8px;font-weight:600}
+.progress{background:var(--surface);border-radius:12px;padding:14px 16px;font-size:14px}
+.progress i{display:block;height:8px;background:var(--surface-2);border-radius:5px;margin-top:8px;overflow:hidden}
+.progress i b{display:block;height:100%;background:var(--olive);border-radius:5px}
+.summary{border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;position:sticky;top:64px}
+.summary h2{font-size:20px}
+.srow{display:flex;justify-content:space-between;gap:10px;font-size:14.5px}
+.srow.total{font-size:18px;font-weight:800;border-top:1px solid var(--line);padding-top:10px}
+.pays{display:flex;gap:6px;flex-wrap:wrap;font-size:11.5px;color:var(--muted)}
+.pays span{border:1px solid var(--line);border-radius:5px;padding:2px 7px;font-weight:600}
+.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.mini .card-title{font-size:13.5px}
+
+/* Checkout */
+.steps{display:flex;gap:0;margin:18px 0 22px;counter-reset:st;flex-wrap:wrap}
+.step{flex:1;min-width:120px;display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--muted);position:relative;padding-right:12px}
+.step i{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:13px;border:2px solid var(--line);background:var(--bg)}
+.step.done{color:var(--olive-d)} .step.done i{background:var(--olive);border-color:var(--olive);color:#fff}
+.step.now{color:var(--ink)} .step.now i{border-color:var(--flor);color:var(--flor)}
+.step::after{content:"";flex:1;height:2px;background:var(--line)}
+.step:last-child::after{display:none}
+.step.done::after{background:var(--olive)}
+.co-sec{border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:14px}
+.co-sec h3{font-size:17px;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.co-sec.done{background:var(--surface)}
+.co-sec.done p{margin:0;font-size:14px;color:var(--muted)}
+.co-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.opt{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;border:1.5px solid var(--line);border-radius:10px;padding:11px 14px;margin-bottom:8px;font-size:14px;cursor:pointer}
+.opt.on{border-color:var(--olive);background:var(--olive-l)}
+.opt input{accent-color:var(--olive)}
+.opt small{display:block;color:var(--muted)}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fgrid label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.fgrid .in{border:1px solid var(--line);border-radius:8px;padding:9px 11px;color:var(--ink);background:var(--bg)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;font-size:13.5px}
+.seg span{padding:7px 14px;font-weight:600}
+.seg span.on{background:var(--olive);color:#fff}
+.secure{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--muted)}
+
+/* Confirmación */
+.ok-hero{display:flex;gap:18px;align-items:center;padding-block:30px 10px}
+.ok-badge{width:64px;height:64px;border-radius:50%;background:var(--ok);display:grid;place-items:center;color:#fff;flex:none}
+.ok-hero h1{font-size:32px}
+.ok-hero p{margin:6px 0 0;color:var(--muted)}
+.track{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-top:6px}
+.track div{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;font-size:12.5px;color:var(--muted);position:relative}
+.track div::before{content:"";position:absolute;top:13px;left:-50%;right:50%;height:2px;background:var(--line)}
+.track div:first-child::before{display:none}
+.track i{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);background:var(--bg);display:grid;place-items:center;font-style:normal;font-size:12px;position:relative;z-index:1}
+.track .d i{background:var(--olive);border-color:var(--olive);color:#fff}
+.track .d::before,.track .n::before{background:var(--olive)}
+.track .n i{border-color:var(--flor);color:var(--flor)}
+.track .d,.track .n{color:var(--ink);font-weight:600}
+.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.info-grid .box b{display:block;font-size:14px}
+.info-grid .box span{font-size:13.5px;color:var(--muted)}
+.refer{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;background:var(--flor-l);border-radius:16px;padding:20px 22px}
+.refer h3{font-size:20px;color:var(--flor-d)}
+.refer p{margin:6px 0 0;font-size:14px;color:var(--muted)}
+.code-big{font-family:var(--f-display);font-weight:800;font-size:22px;letter-spacing:.08em;background:var(--bg);border:1.5px dashed var(--flor);border-radius:10px;padding:8px 14px;color:var(--flor-d)}
+
+/* Cuenta */
+.acct{display:grid;grid-template-columns:230px 1fr;gap:28px;padding-block:22px 8px;align-items:start}
+.side{display:flex;flex-direction:column;gap:4px;font-size:14.5px}
+.who{display:flex;gap:10px;align-items:center;padding-bottom:14px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+.avatar{width:44px;height:44px;border-radius:50%;background:var(--cobre-l);color:var(--cobre);display:grid;place-items:center;font-weight:800}
+.who small{display:block;color:var(--muted);font-size:12.5px}
+.side a{text-decoration:none;padding:8px 10px;border-radius:8px;color:var(--muted);font-weight:600}
+.side a.on{background:var(--olive-l);color:var(--olive-d)}
+.order{border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:12px}
+.order-h{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.order-h b{font-size:15px}
+.order-h small{color:var(--muted);font-size:13px}
+.st{font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px}
+.st.prep{background:var(--warn-l);color:var(--warn)}
+.st.ok{background:var(--ok-l);color:var(--ok)}
+.order-items{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.order-items .oi{width:48px;height:48px;border-radius:8px;overflow:hidden}
+.order-items .oi svg{width:100%;height:100%}
+.order-actions{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+.btn-s{padding:7px 14px;font-size:13px}
+.replenish{display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;background:var(--olive-l);border-radius:14px;padding:14px 16px;margin-bottom:18px}
+.replenish .ph{width:64px;height:64px;border-radius:10px;overflow:hidden}
+.replenish small{display:block;color:var(--muted);font-size:13px}
+.priv{border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.tog{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;padding-block:10px;border-bottom:1px solid var(--line);font-size:14px}
+.tog:last-of-type{border-bottom:0}
+.tog small{display:block;color:var(--muted);font-size:12.5px}
+.sw{width:42px;height:24px;border-radius:999px;background:var(--surface-2);position:relative;border:0;cursor:pointer;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .15s}
+.sw[aria-checked="true"]{background:var(--olive)}
+.sw[aria-checked="true"]::after{left:21px}
+.sw[disabled]{opacity:.55;cursor:not-allowed}
+@media (prefers-reduced-motion:reduce){.sw::after{transition:none}}
+
+/* Corporativo */
+.b2b-hero{display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:center;padding-block:30px 10px}
+.b2b-hero h1{font-size:38px;color:var(--olive-d)}
+.b2b-hero p{color:var(--muted);font-size:16.5px}
+.cfg{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+.cfg-step{border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:14px}
+.cfg-step h3{font-size:17px;margin-bottom:12px}
+.basket-opts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.bopt{border:1.5px solid var(--line);border-radius:12px;padding:10px;font-size:13.5px;cursor:pointer}
+.bopt.on{border-color:var(--olive);background:var(--olive-l)}
+.bopt .ph{border-radius:8px;overflow:hidden;aspect-ratio:4/3;margin-bottom:8px}
+.bopt .ph svg{width:100%;height:100%}
+.tiers{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:10px}
+.tiers th,.tiers td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
+.tiers tr.on td{background:var(--olive-l);font-weight:700}
+.testi{border-left:4px solid var(--olive);padding:4px 0 4px 16px;font-size:14.5px;color:var(--muted)}
+.testi b{display:block;color:var(--ink);font-size:13.5px;margin-top:6px}
+
+/* Admin */
+.adm{background:var(--surface);min-height:100%}
+.adm-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding-block:20px 6px}
+.adm-top h1{font-size:28px}
+.adm-top p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.example{font-size:12px;font-weight:700;color:var(--warn);background:var(--warn-l);border-radius:999px;padding:4px 10px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-block:14px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.kpi small{display:block;color:var(--muted);font-size:12.5px}
+.kpi b{font-family:var(--f-display);font-size:28px;display:block;margin-top:2px}
+.kpi span{font-size:12.5px;color:var(--ok);font-weight:700}
+.adm-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:14px;align-items:start}
+.panel{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px;min-width:0}
+.panel h2{font-size:17px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{text-align:left;font-size:12px;color:var(--muted);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.segdot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.segbar{display:flex;height:14px;border-radius:7px;overflow:hidden;margin:4px 0 12px}
+.rule{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding-block:9px;border-bottom:1px solid var(--line);font-size:13.5px}
+.rule:last-child{border-bottom:0}
+.rule small{display:block;color:var(--muted);font-size:12px}
+.model{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13.5px}
+.model dt{color:var(--muted)} .model dd{margin:0;font-weight:600}
+
+/* Flujo */
+.flow-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--bg);padding:10px}
+.flow-wrap svg{display:block;min-width:960px;width:100%;height:auto}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--ink);color:#fff;border-radius:999px;padding:10px 18px;font-size:14px;z-index:70}
+
+@media (max-width:980px){
+  .grid{grid-template-columns:repeat(3,1fr)}
+  .catgrid{grid-template-columns:repeat(3,1fr)}
+  .ugc{grid-template-columns:repeat(3,1fr)}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .adm-grid,.cfg,.cart-layout,.pdp,.hero,.b2b-hero,.two{grid-template-columns:1fr}
+  .summary{position:static}
+  footer .wrap{grid-template-columns:1fr 1fr}
+}
+@media (max-width:720px){
+  .hdr{grid-template-columns:1fr auto}
+  .search{grid-column:1/-1;order:3}
+  .grid,.grid.g3,.mini{grid-template-columns:repeat(2,1fr)}
+  .cat-layout,.acct{grid-template-columns:1fr}
+  .trust,.news,.info-grid,.basket-opts{grid-template-columns:1fr}
+  .hero h1{font-size:32px}
+  .citem{grid-template-columns:64px 1fr;}
+  .citem .ph{width:64px;height:64px}
+  .citem>:nth-child(3),.citem>:nth-child(4){grid-column:2}
+  .bundle,.refer{grid-template-columns:1fr}
+  .track{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .proto-name{display:none}
+  .hicons{gap:14px}
+  .hicons .lbl{display:none}
+  .camp svg{width:150px;right:-44px;bottom:-44px;opacity:.6}
+}
+</style>
+</head>
+<body>
+<div class="proto">
+  <div class="wrap">
+    <span class="proto-name">Prototipo navegable · Copayapu</span>
+    <nav class="proto-nav" id="pnav" aria-label="Pantallas del prototipo"></nav>
+    <label for="rftoggle"><input type="checkbox" id="rftoggle" checked> Requisitos</label>
+  </div>
+</div>
+<div id="app"></div>
+<a class="wa" href="#cuenta" aria-label="Escríbenos por WhatsApp">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 1-13.4 7.9L3 21l1.2-4.4A9 9 0 1 1 21 12z"/><path d="M9 9.5c.4 2 2 4 4.5 5" stroke-linecap="round"/></svg>
+  WhatsApp
+</a>
+
+<script>
+const SCREENS=[
+  ['inicio','Inicio'],['catalogo','Catálogo'],['producto','Ficha de producto'],['carrito','Carrito'],
+  ['checkout','Checkout'],['confirmacion','Confirmación'],['cuenta','Mi cuenta'],['corporativo','Canastas corporativas'],
+  ['admin','Panel de personalización'],['flujo','Flujo de navegación']
+];
+const P=[
+ {id:'aceite500',n:'Aceite de oliva extra virgen 500 ml',cat:'Aceites y aceitunas',o:'Valle del Huasco',p:8990,r:4.8,rv:126,a:'bottle',c:['#5F7322','#DDE5BD'],st:18,b:'Más vendido'},
+ {id:'aceite1l',n:'Aceite de oliva extra virgen 1 L',cat:'Aceites y aceitunas',o:'Valle del Huasco',p:15990,r:4.9,rv:88,a:'bottle',c:['#4B5C18','#D2DCAA'],st:9},
+ {id:'aceitunas',n:'Aceitunas sevillanas 500 g',cat:'Aceites y aceitunas',o:'Valle del Huasco',p:4990,r:4.7,rv:64,a:'jar',c:['#3D4A1C','#E1E6CB'],st:31},
+ {id:'pasas',n:'Pasas flame 500 g',cat:'Pasas y frutos secos',o:'Valle de Copiapó',p:3990,r:4.9,rv:211,a:'bag',c:['#7A2E3A','#F1DCDC'],st:54,b:'Favorito local'},
+ {id:'pasasm',n:'Pasas morenas sin semilla 1 kg',cat:'Pasas y frutos secos',o:'Valle de Copiapó',p:6990,r:4.6,rv:73,a:'bag',c:['#4E2A1E','#EADBD2'],st:22},
+ {id:'nueces',n:'Nueces mariposa 500 g',cat:'Pasas y frutos secos',o:'Valle del Huasco',p:7490,r:4.7,rv:45,a:'bag',c:['#86602F','#F1E5D3'],st:3,b:'Últimas 3 unidades',low:true},
+ {id:'chanar',n:'Mermelada de chañar 250 g',cat:'Dulces y conservas',o:'Tierra Amarilla',p:4490,r:4.8,rv:97,a:'jar',c:['#B0622A','#F6E5D6'],st:26,b:'Fruto nativo'},
+ {id:'arrope',n:'Arrope de chañar 250 ml',cat:'Dulces y conservas',o:'Tierra Amarilla',p:5290,r:4.6,rv:38,a:'bottle',c:['#6B3A1F','#F0E0D2'],st:14},
+ {id:'miel',n:'Miel multifloral 500 g',cat:'Dulces y conservas',o:'Alto del Carmen',p:6490,r:4.9,rv:120,a:'jar',c:['#C2841A','#F8EBCF'],st:20},
+ {id:'pajarete',n:'Pajarete 750 ml',cat:'Pajarete y licores',o:'Alto del Carmen',p:9990,r:4.7,rv:58,a:'bottle',c:['#7B2A2A','#F2DEDB'],st:12,adult:true},
+ {id:'sal',n:'Sal de mar con hierbas 200 g',cat:'Despensa costera',o:'Caldera',p:3990,r:4.5,rv:29,a:'jar',c:['#3E6E86','#DCEAF0'],st:40},
+ {id:'cobre',n:'Posavasos de cobre, set de 4',cat:'Artesanía',o:'Copiapó',p:12990,r:4.8,rv:22,a:'coaster',c:['#A55D27','#F4E3D5'],st:7},
+ {id:'cvalle',n:'Canasta Valle de Copiapó',cat:'Canastas de regalo',o:'Selección Copayapu',p:34990,r:4.9,rv:76,a:'basket',c:['#46591F','#E6EBD6'],st:15},
+ {id:'cflorido',n:'Canasta Desierto Florido',cat:'Canastas de regalo',o:'Selección Copayapu',p:49990,r:5.0,rv:41,a:'basket',c:['#B4245C','#FAE5EE'],st:10,b:'Temporada'},
+ {id:'cfaena',n:'Canasta Faena (corporativa)',cat:'Canastas de regalo',o:'Selección Copayapu',p:24990,r:4.8,rv:33,a:'basket',c:['#A55D27','#F5E6D8'],st:60}
+];
+const byId=Object.fromEntries(P.map(p=>[p.id,p]));
+const CATS=['Aceites y aceitunas','Pasas y frutos secos','Dulces y conservas','Pajarete y licores','Canastas de regalo','Artesanía','Despensa costera'];
+const state={cat:null};
+const fmt=n=>'$'+n.toLocaleString('es-CL');
+const rf=(...c)=>c.map(x=>`<span class="rf" title="Trazabilidad con el requisito ${x}">${x}</span>`).join('');
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+
+function art(p,extra=''){
+  const [d,l]=p.c;let s='';
+  if(p.a==='bottle')s=`<rect x="44" y="12" width="12" height="7" rx="2" fill="${d}" opacity=".7"/><rect x="43" y="18" width="14" height="14" rx="2" fill="${d}"/><path d="M38 32h24l5 11v44a7 7 0 0 1-7 7H40a7 7 0 0 1-7-7V43z" fill="${d}"/><rect x="37" y="54" width="26" height="22" rx="3" fill="#fff" opacity=".93"/><rect x="42" y="60" width="16" height="3" rx="1.5" fill="${d}"/><rect x="44" y="66" width="12" height="2.5" rx="1.25" fill="${d}" opacity=".5"/>`;
+  if(p.a==='jar')s=`<rect x="31" y="24" width="38" height="11" rx="3" fill="${d}"/><rect x="27" y="35" width="46" height="57" rx="11" fill="${d}" opacity=".88"/><rect x="33" y="52" width="34" height="22" rx="3" fill="#fff" opacity=".93"/><rect x="38" y="58" width="24" height="3" rx="1.5" fill="${d}"/><rect x="41" y="64" width="18" height="2.5" rx="1.25" fill="${d}" opacity=".5"/>`;
+  if(p.a==='bag')s=`<path d="M31 22h38l7 68a4 4 0 0 1-4 4H28a4 4 0 0 1-4-4z" fill="${d}"/><rect x="31" y="22" width="38" height="8" fill="#000" opacity=".15"/><ellipse cx="50" cy="62" rx="14" ry="16" fill="#fff" opacity=".9"/><circle cx="45" cy="57" r="3.2" fill="${d}"/><circle cx="53" cy="60" r="3.2" fill="${d}"/><circle cx="47" cy="66" r="3.2" fill="${d}"/><circle cx="55" cy="68" r="3" fill="${d}" opacity=".8"/>`;
+  if(p.a==='basket')s=`<rect x="34" y="28" width="10" height="28" rx="3" fill="#5F7322"/><rect x="48" y="36" width="16" height="20" rx="5" fill="#C2841A"/><rect x="66" y="40" width="12" height="16" rx="3" fill="#7A2E3A"/><path d="M27 54c0-30 46-30 46 0" stroke="${d}" stroke-width="5" fill="none"/><path d="M16 52h68l-8 38a6 6 0 0 1-6 4H30a6 6 0 0 1-6-4z" fill="${d}"/><path d="M22 64h56M25 76h50" stroke="#fff" stroke-width="2" opacity=".35"/>`;
+  if(p.a==='coaster')s=`<ellipse cx="50" cy="70" rx="30" ry="9" fill="${d}" opacity=".55"/><ellipse cx="50" cy="62" rx="30" ry="9" fill="${d}" opacity=".75"/><ellipse cx="50" cy="54" rx="30" ry="9" fill="${d}"/><ellipse cx="50" cy="54" rx="20" ry="5.5" fill="none" stroke="#fff" stroke-width="1.5" opacity=".6"/>`;
+  return `<svg viewBox="0 0 100 100" role="img" aria-label="${esc(p.n)}" preserveAspectRatio="xMidYMid slice"><rect width="100" height="100" fill="${l}"/>${extra}${s}</svg>`;
+}
+function card(p,why=''){
+  return `<article class="card">
+    <a href="#producto" class="card-img">${art(p)}${p.b?`<span class="badge${p.low?' low':''}">${p.b}</span>`:''}${p.adult?'<span class="badge adult">+18</span>':''}</a>
+    <div class="card-body">
+      <span class="origin">${p.o}</span>
+      <a href="#producto" class="card-title">${p.n}</a>
+      <span class="stars">★ ${p.r.toFixed(1).replace('.',',')} <span>(${p.rv} reseñas)</span></span>
+      <div class="card-foot"><b class="price">${fmt(p.p)}</b><button class="add" data-add="${p.id}" type="button">Agregar</button></div>
+      ${why?`<span class="why">${why}</span>`:''}
+    </div></article>`;
+}
+const I={
+  search:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/></svg>',
+  user:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" stroke-linecap="round"/></svg>',
+  cart:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6.2" stroke-linejoin="round"/><circle cx="10" cy="20.5" r="1.3"/><circle cx="17" cy="20.5" r="1.3"/></svg>',
+  lock:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
+  truck:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6h12v10H2zM14 10h4l4 4v2h-8z" stroke-linejoin="round"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>',
+  doc:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z" stroke-linejoin="round"/><path d="M9 12h8M9 16h6"/></svg>',
+  chat:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 1-13.4 7.9L3 21l1.2-4.4A9 9 0 1 1 21 12z"/></svg>',
+  check:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 5 5 9-10" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  share:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>',
+  ig:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>',
+  fb:'<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M14 8h3V4h-3c-2.8 0-4.5 1.8-4.5 4.6V11H7v4h2.5v7h4v-7H16l.7-4h-3.2V8.8c0-.5.3-.8.5-.8z"/></svg>',
+  link:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" stroke-linecap="round"/></svg>'
+};
+const flower=(fill='#fff',petal='#F7C6D9')=>`<svg viewBox="0 0 120 120" aria-hidden="true">${[0,72,144,216,288].map(r=>`<ellipse cx="60" cy="34" rx="17" ry="26" fill="${petal}" transform="rotate(${r} 60 60)"/>`).join('')}<circle cx="60" cy="60" r="12" fill="${fill}"/></svg>`;
+const logo=`<svg width="40" height="40" viewBox="0 0 120 120" aria-hidden="true">${[0,72,144,216,288].map(r=>`<ellipse cx="60" cy="33" rx="16" ry="25" fill="#B4245C" transform="rotate(${r} 60 60)"/>`).join('')}<circle cx="60" cy="60" r="13" fill="#E9C46A"/></svg>`;
+
+function header(q=''){
+  const sug=q?`<div class="suggest" role="listbox">
+      <div class="sg-h">Productos</div>
+      <a href="#producto"><span>Aceite de oliva extra virgen 500 ml</span><small>${fmt(8990)}</small></a>
+      <a href="#producto"><span>Aceite de oliva extra virgen 1 L</span><small>${fmt(15990)}</small></a>
+      <div class="sg-h">Categorías</div>
+      <a href="#catalogo"><span>Aceites y aceitunas</span><small>3 productos</small></a>
+      <a href="#catalogo"><span>Canastas con aceite de oliva</span><small>2 productos</small></a>
+    </div>`:'';
+  return `<div class="announce"><div class="wrap">Envío gratis desde ${fmt(45000)} a todo Chile · Retiro sin costo en nuestra tienda de Copiapó · Paga con Webpay Plus o Mercado Pago</div></div>
+  <header class="site">
+    <div class="wrap hdr">
+      <a href="#inicio" class="logo">${logo}<span><b>Copayapu</b><small>Sabores de Atacama</small></span></a>
+      <div class="search">${I.search}<input id="q" type="search" placeholder="Busca aceite de oliva, pasas, canastas…" value="${esc(q)}" aria-label="Buscar productos">${rf('RF03')}${sug}</div>
+      <nav class="hicons" aria-label="Cuenta y carrito"><a href="#cuenta" aria-label="Mi cuenta">${I.user}<span class="lbl">Mi cuenta</span></a><a href="#carrito" aria-label="Carrito, 5 productos">${I.cart}<span class="lbl">Carrito</span> <span class="count">5</span></a></nav>
+    </div>
+    <nav class="cats" aria-label="Categorías"><div class="wrap">
+      ${CATS.slice(0,6).map(c=>`<a href="#catalogo" data-cat="${c}">${c}</a>`).join('')}
+      <a href="#corporativo" class="hl">Canastas corporativas</a>
+    </div></nav>
+  </header>`;
+}
+function footer(){
+  return `<footer>
+    <div class="wrap">
+      <div><h4>Copayapu · Sabores de Atacama</h4><p style="margin:0;max-width:34ch">Productos de los valles de Copiapó y del Huasco, seleccionados en nuestra tienda del centro de Copiapó, Región de Atacama.</p></div>
+      <div><h4>Ayuda ${rf('RF10')}</h4><ul><li><a href="#">Envíos y retiro en tienda</a></li><li><a href="#">Cambios y devoluciones</a></li><li><a href="#">Derecho a retracto (10 días)</a></li><li><a href="#">Preguntas frecuentes</a></li></ul></div>
+      <div><h4>Legal ${rf('RF20')}</h4><ul><li><a href="#">Términos y condiciones</a></li><li><a href="#">Política de privacidad</a></li><li><a href="#cuenta">Preferencias de privacidad y cookies</a></li></ul></div>
+      <div><h4>Síguenos ${rf('RF15')}</h4><ul><li>Instagram · @copayapu.cl</li><li>Facebook · Copayapu</li><li>TikTok · @copayapu</li><li>LinkedIn · Copayapu Empresas</li></ul></div>
+    </div>
+    <div class="legal"><div class="wrap"><span>© Copayapu · Negocio ficticio creado para la Evaluación N.º 3 de TIEL25 E-Commerce</span><span>Sitio con HTTPS · Pagos procesados por Transbank y Mercado Pago ${rf('RNF01')}</span></div></div>
+  </footer>`;
+}
+
+/* ---------- Pantallas ---------- */
+const V={};
+V.inicio=()=>`${header()}<main>
+  <div class="wrap hero">
+    <div class="hero-copy">
+      <span class="eyebrow">Del valle a tu mesa · Región de Atacama</span>
+      <h1>Sabores de Atacama, cosechados en los valles de Copiapó y del Huasco</h1>
+      <p>Aceite de oliva, pasas, chañar, miel y canastas de regalo de productores locales. Despachamos a todo Chile en 24 a 72 horas hábiles.</p>
+      <div class="hero-ctas"><a href="#catalogo" class="btn btn-p">Comprar productos</a><a href="#corporativo" class="btn btn-o">Canastas para empresas</a></div>
+      <div class="hero-facts"><span><b>32</b>productores de Atacama</span><span><b>4,8 ★</b>promedio en 1.150 reseñas</span><span><b>24–72 h</b>despacho nacional</span></div>
+    </div>
+    <div class="camp">
+      <div><span class="eyebrow" style="color:#FCE3EC">Campaña de temporada ${rf('RF19')}</span>
+      <h2>Desierto Florido en tu mesa</h2>
+      <p>15 % de descuento en canastas de regalo durante la temporada.</p>
+      <span class="code">FLORIDO15</span></div>
+      <a href="#producto" class="btn">Ver canastas</a>
+      ${flower('#E9C46A','#F7C6D9')}
+    </div>
+  </div>
+  <section class="wrap sec">
+    <div class="sec-h"><div><h2>Compra por categoría ${rf('RF02')}</h2></div><a href="#catalogo" class="linkish">Ver todo el catálogo →</a></div>
+    <div class="catgrid">${[['Aceites y aceitunas','aceite500',3],['Pasas y frutos secos','pasas',3],['Dulces y conservas','chanar',3],['Pajarete y licores','pajarete',1],['Canastas de regalo','cflorido',3],['Artesanía','cobre',1]].map(([c,id,n])=>`<a class="cat" href="#catalogo" data-cat="${c}"><span class="ph">${art(byId[id])}</span><span>${c}<br><small>${n} productos</small></span></a>`).join('')}</div>
+  </section>
+  <section class="wrap">
+    <div class="reco">
+      <div class="sec-h"><div><span class="eyebrow">Recomendado para ti ${rf('RF14')}</span><h2>Camila, esto combina con tus compras</h2><p>Porque compraste <b>Pasas flame 500 g</b> y <b>Miel multifloral</b>.</p></div><a href="#cuenta" class="linkish">¿Por qué veo esto?</a></div>
+      <div class="grid">${card(byId.nueces,'Comprado junto con tus pasas')}${card(byId.chanar,'Similar a la miel que compraste')}${card(byId.cvalle,'Popular entre clientes como tú')}${card(byId.aceite500,'Más vendido en tu segmento')}</div>
+    </div>
+  </section>
+  <section class="wrap sec">
+    <div class="sec-h"><div><h2>Lo más vendido esta semana</h2><p>Se muestra a visitantes nuevos y a quienes desactivan la personalización.</p></div></div>
+    <div class="grid">${['pasas','aceite500','cflorido','miel'].map(i=>card(byId[i])).join('')}</div>
+  </section>
+  <section class="wrap sec" style="padding-top:0">
+    <div class="sec-h"><div><span class="eyebrow">Comunidad ${rf('RF15','RF13')}</span><h2>#SaboresDeAtacama en Instagram</h2><p>Fotos de clientes publicadas con su permiso. Toca una foto para ver y comprar en nuestra tienda los productos que aparecen.</p></div><a href="#" class="linkish">Seguir a @copayapu.cl →</a></div>
+    <div class="ugc">${[['@vale.viaja','cflorido','Comprar'],['@cocinaconpaz','aceite500','Comprar'],['@jp_atacama','pasas','Comprar'],['@la.mesa.de.rosa','chanar','Comprar'],['@trekking.norte','cvalle','Comprar'],['@don.lucho.cl','pajarete','Comprar']].map(([u,id,t])=>`<figure><a href="#producto" aria-label="Comprar ${esc(byId[id].n)}">${art(byId[id],`<circle cx="18" cy="18" r="40" fill="${byId[id].c[0]}" opacity=".12"/>`)}</a><figcaption><span>${u}</span><span class="tag">${t}</span></figcaption></figure>`).join('')}</div>
+    <div class="social-cta"><span><b>Comparte tu compra con #SaboresDeAtacama</b> y recibe 10 % de descuento en tu próxima compra.</span><a href="#confirmacion" class="btn btn-f">Cómo participar</a></div>
+  </section>
+  <section class="wrap">
+    <div class="trust">
+      <div><span class="ico">${I.lock}</span><span><b>Pago seguro ${rf('RF06')}</b>Webpay Plus y Mercado Pago. No guardamos datos de tarjetas.</span></div>
+      <div><span class="ico">${I.truck}</span><span><b>Envío a todo Chile ${rf('RF09')}</b>Starken, Chilexpress, Blue Express o retiro en Copiapó.</span></div>
+      <div><span class="ico">${I.doc}</span><span><b>Boleta electrónica ${rf('RF11')}</b>Llega a tu correo apenas se aprueba el pago.</span></div>
+      <div><span class="ico">${I.chat}</span><span><b>Atención por WhatsApp ${rf('RF10')}</b>Lunes a sábado, de 9:00 a 19:00.</span></div>
+    </div>
+  </section>
+  <section class="wrap sec">
+    <div class="news">
+      <div><h2 style="font-size:24px">Recetas de temporada y ofertas para ti</h2><p style="color:var(--muted);margin:6px 0 0">Un correo cada 15 días. Puedes darte de baja cuando quieras.</p></div>
+      <form onsubmit="event.preventDefault();toast('Te suscribiste al boletín')">
+        <div class="row"><input class="field" id="nl-email" type="email" placeholder="tu@correo.cl" aria-label="Correo electrónico"><button class="btn btn-p" type="submit">Suscribirme</button></div>
+        <label class="check" for="nl-consent"><input type="checkbox" id="nl-consent"> Acepto recibir correos y que Copayapu use mi historial de compras para personalizar ofertas, según la Política de privacidad. ${rf('RF20')}</label>
+      </form>
+    </div>
+  </section>
+</main>${footer()}`;
+
+V.catalogo=()=>{
+  const list=state.cat?P.filter(p=>p.cat===state.cat):P;
+  const counts=c=>P.filter(p=>p.cat===c).length;
+  return `${header('aceite')}<main class="wrap">
+  <div class="crumb"><a href="#inicio">Inicio</a> / Catálogo${state.cat?' / '+state.cat:''}</div>
+  <div class="cat-layout">
+    <aside class="filters" aria-label="Filtros">
+      <div><h3>Categoría ${rf('RF02')}</h3>${CATS.map(c=>`<label for="f-${c.length}${c[0]}"><span><input type="checkbox" id="f-${c.length}${c[0]}" data-fcat="${c}" ${state.cat===c?'checked':''}>${c}</span><small>${counts(c)}</small></label>`).join('')}</div>
+      <div><h3>Origen ${rf('RF03')}</h3>${[['Valle de Copiapó',3],['Valle del Huasco',4],['Alto del Carmen',2],['Tierra Amarilla',2],['Caldera',1]].map(([o,n],i)=>`<label for="fo${i}"><span><input type="checkbox" id="fo${i}">${o}</span><small>${n}</small></label>`).join('')}</div>
+      <div><h3>Precio</h3><div class="range"><input id="pmin" value="$3.000" aria-label="Precio mínimo"><span>–</span><input id="pmax" value="$50.000" aria-label="Precio máximo"></div></div>
+      <div><h3>Ocasión</h3>${['Para regalar','Consumo diario','Regalo corporativo'].map((o,i)=>`<label for="oc${i}"><span><input type="checkbox" id="oc${i}" ${i===0?'checked':''}>${o}</span></label>`).join('')}</div>
+      <div><h3>Disponibilidad ${rf('RF08')}</h3><label for="av1"><span><input type="checkbox" id="av1" checked>Retiro hoy en Copiapó</span></label><label for="av2"><span><input type="checkbox" id="av2">Sin azúcar añadida</span></label></div>
+    </aside>
+    <section style="min-width:0">
+      <div class="toolbar">
+        <div><h1 style="font-size:28px">Catálogo</h1><span style="color:var(--muted);font-size:14px">${list.length} productos · stock actualizado con la tienda física</span></div>
+        <label for="sort" style="font-size:14px;color:var(--muted)">Ordenar por <select id="sort"><option>Recomendados para ti</option><option>Más vendidos</option><option>Precio: menor a mayor</option><option>Mejor evaluados</option></select></label>
+      </div>
+      <div class="active-f" style="margin-bottom:14px"><span class="chip">Para regalar ✕</span><span class="chip">Retiro hoy en Copiapó ✕</span>${state.cat?`<span class="chip">${state.cat} ✕</span>`:''}<a href="#catalogo" class="linkish" data-clear="1" style="align-self:center">Limpiar filtros</a></div>
+      <div class="grid g3">${list.map(p=>card(p)).join('')}</div>
+    </section>
+  </div></main>${footer()}`;
+};
+
+V.producto=()=>{
+  const p=byId.aceite500;
+  return `${header()}<main class="wrap">
+  <div class="crumb"><a href="#inicio">Inicio</a> / <a href="#catalogo">Aceites y aceitunas</a> / ${p.n}</div>
+  <div class="pdp">
+    <div class="gallery">
+      <div class="thumbs">${[p,byId.aceite1l,byId.aceitunas,byId.sal].map((x,i)=>`<div class="thumb${i===0?' on':''}">${art(x)}</div>`).join('')}</div>
+      <div class="main-img">${art(p)}</div>
+    </div>
+    <div class="pinfo">
+      <span class="origin">Denominación de Origen Valle del Huasco · Almazara autorizada por INAPI</span>
+      <h1>${p.n}</h1>
+      <span class="stars" style="font-size:14.5px">★★★★★ 4,8 <span>· 126 reseñas verificadas</span>${rf('RF13')}</span>
+      <div class="pprice"><b>${fmt(p.p)}</b><small>${fmt(17980)} por litro · IVA incluido</small></div>
+      <div class="stock"><span class="dot"></span>En stock: 18 unidades · Retiro hoy en Copiapó ${rf('RF08')}</div>
+      <div class="buy">
+        <div class="qty"><button type="button" aria-label="Quitar uno">−</button><span>1</span><button type="button" aria-label="Agregar uno">+</button></div>
+        <a href="#carrito" class="btn btn-p" style="flex:1">Agregar al carrito</a>
+        <a href="#cuenta" class="btn btn-g">${I.chat} Consultar ${rf('RF10')}</a>
+      </div>
+      <div class="box">
+        <div style="font-weight:700;font-size:14px;margin-bottom:6px">Calcula tu envío a <u>Providencia, RM</u> ${rf('RF09')}</div>
+        <div class="ship-row"><span>Blue Express <small>· 2 a 3 días hábiles</small></span><b class="num">${fmt(3990)}</b></div>
+        <div class="ship-row"><span>Starken <small>· 2 a 3 días hábiles</small></span><b class="num">${fmt(4290)}</b></div>
+        <div class="ship-row"><span>Chilexpress <small>· 1 a 2 días hábiles</small></span><b class="num">${fmt(4990)}</b></div>
+        <div class="ship-row"><span>Retiro en tienda Copiapó <small>· hoy desde las 16:00</small></span><b>Gratis</b></div>
+      </div>
+      <dl class="specs">
+        <dt>Variedad</dt><dd>Sevillana (100 %), extra virgen</dd>
+        <dt>Origen</dt><dd>D. O. Valle del Huasco, certificado del proveedor verificado</dd>
+        <dt>Cosecha</dt><dd>Mayo de 2026, extracción en frío</dd>
+        <dt>Acidez</dt><dd>Menor a 0,3 %</dd>
+        <dt>Consumir antes de</dt><dd>Mayo de 2028</dd>
+      </dl>
+      <div class="share"><b>${I.share} Compartir ${rf('RF15')}</b><a href="#">${I.ig} Instagram</a><a href="#">${I.fb} Facebook</a><a href="#">${I.chat} WhatsApp</a><a href="#">${I.link} Copiar enlace</a></div>
+    </div>
+  </div>
+  <section class="sec" style="padding-top:22px">
+    <div class="bundle">
+      <div>
+        <div class="sec-h" style="margin-bottom:10px"><div><span class="eyebrow">Comprados juntos con frecuencia ${rf('RF14')}</span><h2 style="font-size:21px">El trío del Huasco para tus ensaladas</h2></div></div>
+        <div class="bundle-items">${[p,byId.aceitunas,byId.sal].map((x,i)=>`${i?'<span class="plus">+</span>':''}<div class="bi"><div>${art(x)}</div>${x.n.split(' ').slice(0,2).join(' ')}<br><b>${fmt(x.p)}</b></div>`).join('')}</div>
+      </div>
+      <div style="text-align:right"><div style="color:var(--muted);text-decoration:line-through">${fmt(17970)}</div><div style="font-family:var(--f-display);font-size:28px;font-weight:800">${fmt(16170)}</div><div style="font-size:13px;color:var(--ok);font-weight:700;margin-bottom:10px">Ahorras 10 %</div><a href="#carrito" class="btn btn-p">Agregar los 3</a></div>
+    </div>
+  </section>
+  <div class="tabs"><span>Descripción</span><span class="on">Reseñas (126)</span><span>El productor</span><span>Ficha técnica</span><span>Despacho y devoluciones</span></div>
+  <div class="two">
+    <div>
+      <div class="rv-sum"><div class="rv-big">4,8</div><div class="bars">${[[5,82],[4,13],[3,3],[2,1],[1,1]].map(([s,v])=>`<div class="bar"><span>${s} ★</span><i><b style="width:${v}%"></b></i><span class="num">${v} %</span></div>`).join('')}</div></div>
+      <a href="#cuenta" class="btn btn-o" style="margin-top:14px">Escribir una reseña</a>
+      <p style="font-size:13px;color:var(--muted)">Solo clientes con compra verificada pueden opinar. Las reseñas se moderan antes de publicarse.</p>
+    </div>
+    <div>
+      <article class="review"><header><b>Paula G. · Antofagasta</b><span class="stars">★★★★★</span></header><span class="verified">✓ Compra verificada</span><p style="margin:6px 0 0">Suave y frutado. Lo compré de recuerdo después de ver el Desierto Florido y ahora lo pido todos los meses.</p><div class="rv-photos"><div>${art(p)}</div><div>${art(byId.cvalle)}</div></div></article>
+      <article class="review"><header><b>Mauricio T. · Santiago</b><span class="stars">★★★★☆</span></header><span class="verified">✓ Compra verificada</span><p style="margin:6px 0 0">Llegó en dos días con Starken, muy bien embalado. Me habría gustado un formato de 250 ml.</p><small style="color:var(--muted)">Respuesta de Copayapu: ¡Gracias, Mauricio! El formato de 250 ml llega en diciembre.</small></article>
+    </div>
+  </div>
+  <section class="sec">
+    <div class="sec-h"><div><span class="eyebrow">Combina bien con ${rf('RF14')}</span><h2>Productos similares por origen y uso</h2></div></div>
+    <div class="grid">${['aceitunas','aceite1l','sal','cvalle'].map(i=>card(byId[i])).join('')}</div>
+  </section>
+  </main>${footer()}`;
+};
+
+const CART=[['aceite500',1],['pasas',2],['chanar',1],['pajarete',1]];
+const sub=CART.reduce((s,[i,q])=>s+byId[i].p*q,0);
+V.carrito=()=>`${header()}<main class="wrap">
+  <div class="crumb"><a href="#inicio">Inicio</a> / Carrito</div>
+  <div class="cart-layout">
+    <section style="min-width:0">
+      <h1 style="font-size:30px;margin-bottom:6px">Tu carrito ${rf('RF04')}</h1>
+      <p style="margin:0 0 14px;color:var(--muted)">5 productos · tu carrito se guarda aunque cierres el navegador</p>
+      <div class="progress"><b>Te faltan ${fmt(45000-sub)} para el envío gratis</b> a todo Chile<i><b style="width:${Math.round(sub/45000*100)}%"></b></i></div>
+      ${CART.map(([i,q])=>{const p=byId[i];return `<div class="citem"><div class="ph">${art(p)}</div><div><b>${p.n}</b><br><small>${p.o} · ${fmt(p.p)} c/u</small>${p.adult?`<br><span class="note18">Bebida alcohólica: confirma que eres mayor de 18 años en el pago ${rf('RF17')}</span>`:''}</div><div class="qty"><button type="button" aria-label="Quitar uno">−</button><span>${q}</span><button type="button" aria-label="Agregar uno">+</button></div><b class="num" style="min-width:76px;text-align:right">${fmt(p.p*q)}</b></div>`}).join('')}
+      <section class="sec" style="padding-top:24px">
+        <div class="sec-h" style="margin-bottom:12px"><div><span class="eyebrow">Completa tu canasta ${rf('RF14')}</span><h2 style="font-size:21px">Agrega uno de estos y llega al envío gratis</h2><p>Elegidos según lo que llevas en el carrito y el stock disponible hoy.</p></div></div>
+        <div class="mini">${['cobre','aceite1l','miel'].map(i=>card(byId[i])).join('')}</div>
+      </section>
+    </section>
+    <aside class="summary" aria-label="Resumen del pedido">
+      <h2>Resumen</h2>
+      <div class="srow"><span>Subtotal (5 productos)</span><b class="num">${fmt(sub)}</b></div>
+      <div class="srow"><span>Envío</span><span style="color:var(--muted)">Se calcula en el siguiente paso</span></div>
+      <label for="coupon" style="font-size:13px;color:var(--muted)">Código de descuento o de referido ${rf('RF19')}</label>
+      <div style="display:flex;gap:8px"><input class="field" id="coupon" placeholder="Ej.: CAMILA10" style="border-radius:8px"><button class="btn btn-g btn-s" type="button">Aplicar</button></div>
+      <div class="srow total"><span>Total estimado</span><span class="num">${fmt(sub)}</span></div>
+      <a href="#checkout" class="btn btn-p btn-block">Continuar al pago</a>
+      <span style="font-size:13px;color:var(--muted);text-align:center">Puedes comprar como invitado o <a href="#cuenta">iniciar sesión</a> ${rf('RF01')}</span>
+      <div class="pays"><span>Webpay Plus</span><span>Mercado Pago</span><span>Débito</span><span>Crédito</span><span>Prepago</span></div>
+    </aside>
+  </div></main>${footer()}`;
+
+const SHIP=4290;
+V.checkout=()=>`${header()}<main class="wrap">
+  <div class="steps" aria-label="Pasos del pago">
+    <div class="step done"><i>✓</i>Datos</div><div class="step done"><i>✓</i>Despacho</div><div class="step now"><i>3</i>Pago</div><div class="step"><i>4</i>Confirmación</div>
+  </div>
+  <div class="cart-layout" style="padding-top:0">
+    <section style="min-width:0">
+      <div class="co-sec done"><div class="co-head"><h3>1. Datos de contacto ${rf('RF01')}</h3><a href="#checkout" class="linkish">Editar</a></div><p>Camila Rojas · camila.rojas@correo.cl · +56 9 8123 4567 · Compra como invitada</p></div>
+      <div class="co-sec">
+        <div class="co-head"><h3>2. Despacho ${rf('RF09')}</h3><a href="#checkout" class="linkish">Cambiar dirección</a></div>
+        <p style="margin:0 0 12px;font-size:14px;color:var(--muted)">Av. Los Leones 1234, depto. 52, Providencia, Región Metropolitana</p>
+        <label class="opt" for="s1"><input type="radio" name="ship" id="s1"><span>Blue Express<small>Llega entre el martes 24 y el miércoles 25 de noviembre</small></span><b class="num">${fmt(3990)}</b></label>
+        <label class="opt on" for="s2"><input type="radio" name="ship" id="s2" checked><span>Starken<small>Llega entre el martes 24 y el miércoles 25 de noviembre</small></span><b class="num">${fmt(4290)}</b></label>
+        <label class="opt" for="s3"><input type="radio" name="ship" id="s3"><span>Chilexpress<small>Llega el lunes 23 de noviembre</small></span><b class="num">${fmt(4990)}</b></label>
+        <label class="opt" for="s4"><input type="radio" name="ship" id="s4"><span>Retiro en tienda Copiapó<small>Disponible hoy desde las 16:00</small></span><b>Gratis</b></label>
+      </div>
+      <div class="co-sec">
+        <h3>3. Pago y documento ${rf('RF06','RF11')}</h3>
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap"><span style="font-size:14px;color:var(--muted)">Documento tributario</span><span class="seg"><span class="on">Boleta</span><span>Factura</span></span></div>
+        <label class="opt on" for="p1"><input type="radio" name="pay" id="p1" checked><span>Webpay Plus<small>Tarjetas de débito, crédito y prepago. Te llevamos al sitio seguro de Transbank.</small></span><span class="pays"><span>Transbank</span></span></label>
+        <label class="opt" for="p2"><input type="radio" name="pay" id="p2"><span>Mercado Pago<small>Saldo en cuenta, tarjetas guardadas o cuotas.</small></span><span class="pays"><span>Mercado Pago</span></span></label>
+        <label class="check" for="age" style="margin-top:10px"><input type="checkbox" id="age" checked> Declaro ser mayor de 18 años. Tu pedido incluye pajarete; el repartidor podrá solicitar tu cédula al entregar. ${rf('RF17')}</label>
+        <label class="check" for="terms" style="margin-top:6px"><input type="checkbox" id="terms" checked> Acepto los Términos y condiciones y la Política de privacidad. Tienes derecho a retracto dentro de 10 días desde que recibes tu pedido. ${rf('RF20')}</label>
+      </div>
+    </section>
+    <aside class="summary" aria-label="Resumen del pedido">
+      <h2>Tu pedido</h2>
+      ${CART.map(([i,q])=>`<div class="srow"><span>${q} × ${byId[i].n}</span><span class="num">${fmt(byId[i].p*q)}</span></div>`).join('')}
+      <div class="srow" style="border-top:1px solid var(--line);padding-top:10px"><span>Subtotal</span><span class="num">${fmt(sub)}</span></div>
+      <div class="srow"><span>Envío Starken</span><span class="num">${fmt(SHIP)}</span></div>
+      <div class="srow total"><span>Total</span><span class="num">${fmt(sub+SHIP)}</span></div>
+      <a href="#confirmacion" class="btn btn-p btn-block">${I.lock} Pagar ${fmt(sub+SHIP)} con Webpay</a>
+      <div class="secure">${I.lock}<span>Copayapu no almacena los datos de tu tarjeta: el pago se procesa en la plataforma certificada de Transbank. ${rf('RNF01')}</span></div>
+    </aside>
+  </div></main>${footer()}`;
+
+V.confirmacion=()=>`${header()}<main class="wrap">
+  <div class="ok-hero"><span class="ok-badge">${I.check}</span><div><h1>¡Gracias, Camila! Tu pedido CP-10482 está confirmado</h1><p>Te enviamos el detalle y la boleta electrónica a camila.rojas@correo.cl.</p></div></div>
+  <section class="sec" style="padding-top:14px">
+    <div class="box" style="padding:18px 20px">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px"><b>Estado de tu pedido ${rf('RF07')}</b><span style="font-size:14px;color:var(--muted)">Entrega estimada: martes 24 de noviembre</span></div>
+      <div class="track"><div class="d"><i>✓</i>Pedido recibido</div><div class="d"><i>✓</i>Pago aprobado</div><div class="n"><i>3</i>En preparación</div><div><i>4</i>Despachado</div><div><i>5</i>Entregado</div></div>
+    </div>
+  </section>
+  <div class="info-grid">
+    <div class="box"><b>Pago ${rf('RF06')}</b><span>Webpay Plus · tarjeta de débito terminada en 4821 · ${fmt(sub+SHIP)}</span></div>
+    <div class="box"><b>Boleta electrónica ${rf('RF11')}</b><span>N.º 48213, emitida automáticamente y enviada a tu correo</span></div>
+    <div class="box"><b>Despacho ${rf('RF09')}</b><span>Starken · recibirás el número de seguimiento por correo y WhatsApp</span></div>
+  </div>
+  <section class="sec">
+    <div class="refer">
+      <div><h3>Regala 10 % y gana 10 % ${rf('RF15','RF19')}</h3><p>Comparte tu código con amigos. Cuando hagan su primera compra, ambos reciben 10 % de descuento. También puedes etiquetar a @copayapu.cl con #SaboresDeAtacama.</p>
+      <div class="share" style="margin-top:10px"><a href="#">${I.chat} WhatsApp</a><a href="#">${I.ig} Instagram</a><a href="#">${I.fb} Facebook</a><a href="#">${I.link} Copiar enlace</a></div></div>
+      <span class="code-big">CAMILA10</span>
+    </div>
+  </section>
+  <section class="box" style="display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 20px">
+    <span><b>Guarda tus datos para la próxima vez ${rf('RF01','RF12')}</b><br><span style="font-size:14px;color:var(--muted)">Crea tu cuenta con un clic para seguir este pedido y volver a comprar más rápido.</span></span>
+    <a href="#cuenta" class="btn btn-p">Crear mi cuenta</a>
+  </section>
+  <section class="sec">
+    <div class="sec-h"><div><span class="eyebrow">Quienes compraron lo mismo también llevaron ${rf('RF14')}</span><h2>Para tu próximo pedido</h2></div></div>
+    <div class="grid">${['nueces','miel','arrope','cvalle'].map(i=>card(byId[i])).join('')}</div>
+  </section>
+  </main>${footer()}`;
+
+V.cuenta=()=>`${header()}<main class="wrap">
+  <div class="acct">
+    <aside class="side" aria-label="Menú de la cuenta">
+      <div class="who"><span class="avatar">CR</span><span><b>Camila Rojas</b><small>camila.rojas@correo.cl</small></span></div>
+      <a href="#cuenta" class="on">Mis pedidos</a><a href="#cuenta">Direcciones</a><a href="#cuenta">Mis reseñas</a><a href="#cuenta">Preferencias y privacidad</a><a href="#inicio">Cerrar sesión</a>
+    </aside>
+    <section style="min-width:0">
+      <h1 style="font-size:28px;margin-bottom:14px">Mis pedidos ${rf('RF12')}</h1>
+      <div class="replenish"><div class="ph">${art(byId.pasas)}</div><div><b>¿Te quedan pasas? ${rf('RF14')}</b><small>Compraste Pasas flame 500 g hace 45 días. Clientes como tú suelen reponerlas cada 6 a 8 semanas.</small></div><a href="#carrito" class="btn btn-p btn-s">Agregar al carrito</a></div>
+      <div class="order">
+        <div class="order-h"><div><b>Pedido CP-10482</b> <small>· 19 de noviembre · ${fmt(sub+SHIP)}</small></div><span class="st prep">En preparación</span></div>
+        <div class="track" style="margin-bottom:12px"><div class="d"><i>✓</i>Recibido</div><div class="d"><i>✓</i>Pagado</div><div class="n"><i>3</i>En preparación</div><div><i>4</i>Despachado</div><div><i>5</i>Entregado</div></div>
+        <div class="order-items">${CART.map(([i])=>`<div class="oi">${art(byId[i])}</div>`).join('')}<div class="order-actions"><a href="#confirmacion" class="btn btn-g btn-s">Ver detalle</a><a href="#cuenta" class="btn btn-g btn-s">Descargar boleta</a></div></div>
+      </div>
+      <div class="order">
+        <div class="order-h"><div><b>Pedido CP-10311</b> <small>· 5 de octubre · ${fmt(18470)}</small></div><span class="st ok">Entregado el 8 de octubre</span></div>
+        <div class="order-items">${['pasas','miel','aceitunas'].map(i=>`<div class="oi">${art(byId[i])}</div>`).join('')}<div class="order-actions"><a href="#producto" class="btn btn-g btn-s">Escribir reseña ${rf('RF13')}</a><a href="#carrito" class="btn btn-p btn-s">Volver a comprar</a></div></div>
+      </div>
+      <div class="priv" style="margin-top:18px">
+        <h2 style="font-size:19px;margin-bottom:4px">Preferencias y privacidad ${rf('RF20','RNF02')}</h2>
+        <p style="margin:0 0 6px;font-size:13.5px;color:var(--muted)">Tú decides cómo usamos tus datos. Puedes cambiar estas opciones cuando quieras.</p>
+        <div class="tog"><span>Recomendaciones personalizadas en el sitio<small>Usamos tus compras y los productos que ves para sugerirte otros.</small></span><button class="sw" role="switch" aria-checked="true" aria-label="Recomendaciones personalizadas"></button></div>
+        <div class="tog"><span>Correos con ofertas según mis compras<small>Un correo cada 15 días como máximo.</small></span><button class="sw" role="switch" aria-checked="true" aria-label="Correos con ofertas"></button></div>
+        <div class="tog"><span>Publicidad personalizada en redes sociales<small>Permite compartir eventos de compra con Meta y TikTok para mostrarte anuncios.</small></span><button class="sw" role="switch" aria-checked="false" aria-label="Publicidad en redes sociales"></button></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn btn-g btn-s" type="button" onclick="toast('Te enviaremos tus datos por correo en un máximo de 15 días')">Descargar mis datos</button><button class="btn btn-g btn-s" type="button" onclick="toast('Solicitud registrada. Te contactaremos para confirmarla')">Solicitar eliminación de mi cuenta</button></div>
+      </div>
+    </section>
+  </div></main>${footer()}`;
+
+V.corporativo=()=>{
+  const q=120,base=byId.cvalle.p,disc=.10,tot=Math.round(q*base*(1-disc));
+  return `${header()}<main class="wrap">
+  <div class="b2b-hero">
+    <div><span class="eyebrow">Para empresas ${rf('RF16')}</span><h1>Canastas corporativas con sabores de Atacama</h1><p>Desde 30 unidades, con tarjeta personalizada, despacho a una o varias direcciones y factura electrónica. Ideal para Fiestas Patrias, Navidad y aniversarios de faena.</p>
+    <div class="testi">“Pedimos 240 canastas para Navidad y llegaron a tiempo a la faena y a la oficina de Copiapó.”<b>Jefa de Personas · empresa contratista minera de Atacama (testimonio de ejemplo)</b></div></div>
+    <div class="main-img" style="aspect-ratio:4/3">${art(byId.cfaena)}</div>
+  </div>
+  <div class="cfg sec">
+    <section style="min-width:0">
+      <div class="cfg-step"><h3>1. Elige la canasta</h3><div class="basket-opts">${[['cfaena',0],['cvalle',1],['cflorido',0]].map(([i,on])=>`<div class="bopt${on?' on':''}"><div class="ph">${art(byId[i])}</div><b>${byId[i].n.replace(' (corporativa)','')}</b><br><span style="color:var(--muted)">${fmt(byId[i].p)} c/u</span></div>`).join('')}</div></div>
+      <div class="cfg-step"><h3>2. Cantidad y descuento por volumen</h3>
+        <div class="fgrid"><label for="qty-b2b">Cantidad de canastas<input class="in" id="qty-b2b" value="${q}"></label><label for="date-b2b">Fecha de entrega<input class="in" id="date-b2b" value="15 de diciembre"></label></div>
+        <table class="tiers"><thead><tr><th>Unidades</th><th>Descuento</th><th>Plazo de preparación</th></tr></thead><tbody><tr><td>30 a 99</td><td>5 %</td><td>7 días hábiles</td></tr><tr class="on"><td>100 a 299</td><td>10 %</td><td>10 días hábiles</td></tr><tr><td>300 o más</td><td>15 %</td><td>15 días hábiles</td></tr></tbody></table>
+      </div>
+      <div class="cfg-step"><h3>3. Personalización y despacho</h3>
+        <label class="check" for="b1"><input type="checkbox" id="b1" checked> Tarjeta impresa con el logo y un mensaje de la empresa</label>
+        <label class="check" for="b2"><input type="checkbox" id="b2" checked> Cinta en el color corporativo</label>
+        <label class="check" for="b3"><input type="checkbox" id="b3"> Reemplazar pajarete por un producto sin alcohol (recomendado para faenas) ${rf('RF17')}</label>
+        <label class="check" for="b4"><input type="checkbox" id="b4" checked> Despacho a varias direcciones: subir planilla con destinatarios</label>
+      </div>
+    </section>
+    <aside class="summary" aria-label="Resumen de la cotización">
+      <h2>Cotización estimada</h2>
+      <div class="srow"><span>${q} × Canasta Valle de Copiapó</span><span class="num">${fmt(q*base)}</span></div>
+      <div class="srow"><span>Descuento por volumen (10 %)</span><span class="num" style="color:var(--ok)">−${fmt(Math.round(q*base*disc))}</span></div>
+      <div class="srow"><span>Personalización</span><span>Incluida</span></div>
+      <div class="srow total"><span>Total estimado</span><span class="num">${fmt(tot)}</span></div>
+      <span style="font-size:12.5px;color:var(--muted)">IVA incluido. El despacho se cotiza según las direcciones. Se emite factura electrónica ${rf('RF11')}</span>
+      <span style="font-size:12.5px;color:var(--warn);background:var(--warn-l);border-radius:8px;padding:8px 10px"><b>Sin derecho a retracto:</b> las canastas con tarjeta y logo de tu empresa se arman a pedido, por lo que no admiten derecho a retracto (art. 3 bis, Ley 19.496). ${rf('RF10')}</span>
+      <a href="#confirmacion" class="btn btn-p btn-block">Solicitar cotización formal</a>
+      <a href="#cuenta" class="btn btn-g btn-block">Hablar con una ejecutiva por WhatsApp</a>
+      <span style="font-size:12.5px;color:var(--muted)">Pago con transferencia contra factura, Webpay o Mercado Pago ${rf('RF06')}</span>
+    </aside>
+  </div></main>${footer()}`;
+};
+
+V.admin=()=>{
+  const segs=[['Campeones','#2F3D14',9,'Compran seguido y gastan más','Acceso anticipado a canastas de temporada'],['Leales recurrentes','#6E8A2E',21,'Reponen productos cada 1 a 2 meses','Recordatorio de reposición y suscripción'],['Nuevos prometedores','#C2841A',34,'Una o dos compras recientes','Correo de bienvenida y recomendación por contenido'],['En riesgo','#B4245C',24,'Sin compras en más de 120 días','Cupón de regreso y novedades del valle'],['Empresas','#3E6E86',12,'Pedidos grandes y estacionales','Contacto de ejecutiva antes de Fiestas Patrias y Navidad']];
+  return `<div class="adm"><main class="wrap" style="padding-bottom:30px">
+  <div class="adm-top"><div><span class="eyebrow">WooCommerce · Panel de administración ${rf('RF18')}</span><h1>Personalización y segmentos de clientes</h1><p>Vista interna para la administradora y la encargada de marketing.</p></div><span class="example">Datos de ejemplo del prototipo</span></div>
+  <div class="kpis">
+    <div class="kpi"><small>CTR de recomendaciones (30 días)</small><b>6,4 %</b><span>+1,2 pp vs. reglas simples</span></div>
+    <div class="kpi"><small>Ventas con productos recomendados</small><b>13 %</b><span>del total de ventas en línea</span></div>
+    <div class="kpi"><small>Ticket promedio</small><b>${fmt(38900)}</b><span>+9 % vs. grupo de control</span></div>
+    <div class="kpi"><small>Tasa de recompra a 90 días</small><b>24 %</b><span>meta: 25 %</span></div>
+  </div>
+  <div class="adm-grid">
+    <div>
+      <section class="panel"><h2>Segmentos RFM (K-means, k = 5)</h2>
+        <div class="segbar">${segs.map(s=>`<span style="width:${s[2]}%;background:${s[1]}" title="${s[0]}"></span>`).join('')}</div>
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Segmento</th><th>Clientes</th><th>Perfil</th><th>Acción sugerida</th></tr></thead><tbody>${segs.map(s=>`<tr><td><span class="segdot" style="background:${s[1]}"></span><b>${s[0]}</b></td><td class="n">${s[2]} %</td><td>${s[3]}</td><td>${s[4]}</td></tr>`).join('')}</tbody></table></div>
+        <p style="font-size:12.5px;color:var(--muted);margin:10px 0 0">Una persona revisa cada mes los segmentos antes de usarlos en campañas. Los clientes que desactivaron la personalización no se segmentan.</p>
+      </section>
+      <section class="panel"><h2>Recomendaciones fijadas o excluidas manualmente</h2>
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Producto</th><th>Ubicación</th><th>Decisión</th><th>Motivo</th></tr></thead><tbody>
+          <tr><td>Canasta Desierto Florido</td><td>Inicio</td><td>Fijada</td><td>Campaña de temporada</td></tr>
+          <tr><td>Nueces mariposa 500 g</td><td>Carrito</td><td>Excluida</td><td>Quedan 3 unidades</td></tr>
+          <tr><td>Pajarete 750 ml</td><td>Todas</td><td>Restringida</td><td>Solo para mayores de 18 años verificados</td></tr>
+        </tbody></table></div>
+      </section>
+    </div>
+    <div>
+      <section class="panel"><h2>Reglas de negocio del recomendador</h2>
+        <div class="rule"><span>Excluir productos sin stock<small>Se lee el stock unificado tienda y web</small></span><button class="sw" role="switch" aria-checked="true" aria-label="Excluir sin stock"></button></div>
+        <div class="rule"><span>No recomendar alcohol sin verificación de edad<small>Regla obligatoria, no se puede desactivar</small></span><button class="sw" role="switch" aria-checked="true" disabled aria-label="Restricción de alcohol"></button></div>
+        <div class="rule"><span>Priorizar productos que vencen en menos de 60 días<small>Reduce mermas de perecibles</small></span><button class="sw" role="switch" aria-checked="true" aria-label="Priorizar vencimiento"></button></div>
+        <div class="rule"><span>Diversidad: máximo 2 productos por categoría<small>Evita mostrar siempre lo más vendido</small></span><button class="sw" role="switch" aria-checked="true" aria-label="Diversidad"></button></div>
+        <div class="rule"><span>Dar visibilidad a productores pequeños<small>Al menos 1 de cada 4 sugerencias</small></span><button class="sw" role="switch" aria-checked="false" aria-label="Productores pequeños"></button></div>
+      </section>
+      <section class="panel"><h2>Estado del modelo</h2>
+        <dl class="model"><dt>Versión</dt><dd>rec-híbrido v1.3</dd><dt>Último entrenamiento</dt><dd>Hoy, 03:00 (proceso nocturno)</dd><dt>Datos usados</dt><dd>18 meses de pedidos y 90 días de navegación</dd><dt>Precision@5 (prueba)</dt><dd>0,21</dd><dt>Cobertura del catálogo</dt><dd>87 %</dd><dt>Prueba A/B activa</dt><dd>Carrito: híbrido vs. reglas (50/50)</dd></dl>
+      </section>
+    </div>
+  </div>
+  </main></div>`;
+};
+
+V.flujo=()=>{
+  const n=(x,y,w,h,t,s,href,tags='')=>`<a href="#${href}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${s==='in'?'#F4F5EF':'#FFFFFF'}" stroke="${s==='in'?'#A8AF98':'#46591F'}" stroke-width="${s==='in'?1.2:2}"/><text x="${x+w/2}" y="${y+h/2+(tags?-4:5)}" text-anchor="middle" font-family="Figtree,Segoe UI,sans-serif" font-size="15" font-weight="700" fill="#1E2619">${t}</text>${tags?`<text x="${x+w/2}" y="${y+h/2+15}" text-anchor="middle" font-family="Figtree,Segoe UI,sans-serif" font-size="11.5" fill="#5A6351">${tags}</text>`:''}</a>`;
+  const e=(x,y,w,h,t)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="#F4F5EF" stroke="#A8AF98"/><text x="${x+w/2}" y="${y+h/2+5}" text-anchor="middle" font-family="Figtree,Segoe UI,sans-serif" font-size="13.5" font-weight="600" fill="#1E2619">${t}</text>`;
+  const ar=(d,c='#2F3D14',dash='',m='a')=>`<path d="${d}" fill="none" stroke="${c}" stroke-width="2" ${dash?`stroke-dasharray="${dash}"`:''} marker-end="url(#${m})"/>`;
+  const lbl=(x,y,t,c='#5A6351')=>`<text x="${x}" y="${y}" font-family="Figtree,Segoe UI,sans-serif" font-size="12" fill="${c}" text-anchor="middle">${t}</text>`;
+  return `${header()}<main class="wrap sec">
+  <div class="sec-h"><div><span class="eyebrow">Mapa del prototipo</span><h1 style="font-size:30px">Flujo de navegación y compra</h1><p>Haz clic en una pantalla para abrirla. Las etiquetas indican dónde aparecen recomendaciones (R) y elementos sociales (S).</p></div></div>
+  <div class="flow-wrap"><svg viewBox="0 0 1120 600" role="img" aria-label="Diagrama del flujo de navegación">
+    <defs>
+      <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#2F3D14"/></marker>
+      <marker id="m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#B4245C"/></marker>
+      <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#2552B8"/></marker>
+    </defs>
+    ${lbl(560,18,'CANALES DE ENTRADA','#5A6351')}
+    ${e(20,30,190,46,'TikTok y Reels')}${e(245,30,190,46,'Google (búsqueda)')}${e(470,30,190,46,'Anuncios Instagram/Facebook')}${e(695,30,190,46,'WhatsApp Business')}${e(920,30,180,46,'Correo de carrito')}
+    ${ar('M115 76 L140 168','#B4245C','6 4','m')}${ar('M340 76 L410 168','#2F3D14','6 4')}${ar('M565 76 L660 168','#B4245C','6 4','m')}${ar('M790 76 L740 168','#B4245C','6 4','m')}${ar('M1010 76 L985 168','#2552B8','6 4','b')}
+    ${n(40,170,200,64,'1 · Inicio','', 'inicio','R · S · campaña')}
+    ${n(320,170,200,64,'2 · Catálogo','', 'catalogo','búsqueda y filtros')}
+    ${n(600,170,200,64,'3 · Ficha de producto','', 'producto','R · S · reseñas')}
+    ${n(880,170,200,64,'4 · Carrito','', 'carrito','R · cupón')}
+    ${ar('M240 202 L316 202')}${ar('M520 202 L596 202')}${ar('M800 202 L876 202')}
+    ${ar('M980 234 L980 326')}
+    ${n(880,330,200,64,'5 · Checkout','', 'checkout','datos · despacho · pago')}
+    ${ar('M880 362 L804 362')}
+    ${n(600,330,200,64,'6 · Confirmación','', 'confirmacion','R · S · referidos')}
+    ${ar('M600 362 L524 362')}
+    ${n(320,330,200,64,'7 · Mi cuenta','', 'cuenta','R · pedidos · privacidad')}
+    ${ar('M140 234 L140 326')}
+    ${n(40,330,200,64,'8 · Canastas corporativas','', 'corporativo','cotización B2B')}
+    ${ar('M470 330 C 560 285, 820 290, 912 236','#2F3D14','')}${lbl(690,308,'Volver a comprar')}
+    ${ar('M700 394 L700 466','#B4245C','6 4','m')}
+    ${e(600,470,200,46,'Reseñas y fotos (UGC)')}
+    ${ar('M600 493 H 22 V 82','#B4245C','6 4','m')}${lbl(225,486,'El contenido de clientes vuelve a las redes','#B4245C')}
+    ${ar('M980 394 L980 466','#2552B8','6 4','b')}
+    ${n(880,470,200,64,'9 · Panel admin','', 'admin','segmentos y reglas')}
+    ${lbl(1050,440,'eventos de compra','#2552B8')}
+    ${ar('M980 534 V 562 H 420 V 398','#2552B8','6 4','b')}${lbl(700,580,'Recomendaciones y segmentos actualizados (R en las pantallas)','#2552B8')}
+  </svg></div>
+  <div class="legend"><span><svg width="34" height="8"><path d="M0 4h34" stroke="#2F3D14" stroke-width="2"/></svg>Flujo principal de compra</span><span><svg width="34" height="8"><path d="M0 4h34" stroke="#B4245C" stroke-width="2" stroke-dasharray="6 4"/></svg>Marketing social</span><span><svg width="34" height="8"><path d="M0 4h34" stroke="#2552B8" stroke-width="2" stroke-dasharray="6 4"/></svg>Datos y modelo de ML</span><span><b>R</b> recomendaciones</span><span><b>S</b> elemento social</span></div>
+  </main>${footer()}`;
+};
+
+/* ---------- Enrutador ---------- */
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;t.setAttribute('role','status');document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
+function render(){
+  const id=(location.hash||'#inicio').slice(1);
+  const key=V[id]?id:'inicio';
+  document.getElementById('app').innerHTML=V[key]();
+  document.getElementById('pnav').innerHTML=SCREENS.map(([k,t],i)=>`<a href="#${k}" ${k===key?'aria-current="page"':''}><span>${i<9?i+1:'↳'}</span>${t}</a>`).join('');
+  document.querySelector('.wa').hidden=(key==='admin');
+  window.scrollTo(0,0);
+}
+document.addEventListener('click',ev=>{
+  const add=ev.target.closest('[data-add]');
+  if(add){ev.preventDefault();toast('Agregaste '+byId[add.dataset.add].n+' al carrito');return}
+  const c=ev.target.closest('[data-cat]');
+  if(c){state.cat=c.dataset.cat}
+  if(ev.target.closest('[data-clear]')){state.cat=null;if(location.hash==='#catalogo'){ev.preventDefault();render()}}
+  const sw=ev.target.closest('.sw');
+  if(sw&&!sw.disabled){sw.setAttribute('aria-checked',sw.getAttribute('aria-checked')==='true'?'false':'true')}
+});
+document.addEventListener('change',ev=>{
+  const f=ev.target.closest('[data-fcat]');
+  if(f){state.cat=f.checked?f.dataset.fcat:null;render()}
+});
+document.getElementById('rftoggle').addEventListener('change',e=>document.body.classList.toggle('no-rf',!e.target.checked));
+window.addEventListener('hashchange',render);
+render();
+</script>
+
+</body>
+</html>

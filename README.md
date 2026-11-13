@@ -3,9 +3,11 @@
 Tienda de referencia construida en **WordPress + WooCommerce** para la Evaluación N.º 3 de la asignatura
 E-Commerce (TIEL25) de INACAP. Copayapu es un **negocio ficticio** creado con fines académicos.
 
-## Ver la tienda
+## Ver el proyecto
 
-**[Abrir la tienda en WordPress Playground](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/blueprint.json)**
+- **Portada del proyecto:** https://mataes3010.github.io/copayapu-tienda/
+- **Prototipo navegable (mockup):** https://mataes3010.github.io/copayapu-tienda/mockup/
+- **[Abrir la tienda en WordPress Playground](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/blueprint.json)**
 
 WordPress Playground es un servicio oficial de WordPress.org que ejecuta el sitio completo en el navegador.
 Al abrir el enlace, la tienda se instala automáticamente; puede tardar alrededor de un minuto.
@@ -33,3 +35,4 @@ porque dependen de servicios externos o de HTTPS.
 - `assets/`: imágenes de productos, logo y banner de campaña.
 - `docker-compose.yml`: entorno local con WordPress, MySQL y WP-CLI.
 - `generar_blueprint.py`: genera `blueprint.json` con las direcciones de este repositorio.
+- `index.html` y `mockup/`: portada y prototipo navegable publicados con GitHub Pages.

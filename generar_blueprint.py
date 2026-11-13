@@ -69,9 +69,11 @@ readme = f"""# Copayapu, Sabores de Atacama · Tienda WooCommerce
 Tienda de referencia construida en **WordPress + WooCommerce** para la Evaluación N.º 3 de la asignatura
 E-Commerce (TIEL25) de INACAP. Copayapu es un **negocio ficticio** creado con fines académicos.
 
-## Ver la tienda
+## Ver el proyecto
 
-**[Abrir la tienda en WordPress Playground]({link})**
+- **Portada del proyecto:** https://{user.lower()}.github.io/{repo}/
+- **Prototipo navegable (mockup):** https://{user.lower()}.github.io/{repo}/mockup/
+- **[Abrir la tienda en WordPress Playground]({link})**
 
 WordPress Playground es un servicio oficial de WordPress.org que ejecuta el sitio completo en el navegador.
 Al abrir el enlace, la tienda se instala automáticamente; puede tardar alrededor de un minuto.
@@ -99,6 +101,7 @@ porque dependen de servicios externos o de HTTPS.
 - `assets/`: imágenes de productos, logo y banner de campaña.
 - `docker-compose.yml`: entorno local con WordPress, MySQL y WP-CLI.
 - `generar_blueprint.py`: genera `blueprint.json` con las direcciones de este repositorio.
+- `index.html` y `mockup/`: portada y prototipo navegable publicados con GitHub Pages.
 """
 (root / 'README.md').write_text(readme, encoding='utf-8')
 print(out, len(steps), 'pasos')
