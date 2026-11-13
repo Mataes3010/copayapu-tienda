@@ -42,9 +42,9 @@ steps.append({'step': 'writeFile', 'path': '/wordpress/wp-content/mu-plugins/cop
 for script in ['01-configuracion.php', '02-catalogo.php', '03-operacion.php', '04-ajustes-visuales.php', '05-pagos.php']:
     steps.append({'step': 'runPHP', 'code':
                   f"<?php define('CPY_ASSETS', '{DEST}/assets/'); define('CPY_SETUP', '{DEST}/setup/'); "
-                  f"require_once 'wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; "
+                  f"require_once '/wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; "
                   f"require '{DEST}/setup/{script}';"})
-steps.append({'step': 'runPHP', 'code': "<?php require_once 'wordpress/wp-load.php'; flush_rewrite_rules( true );"})
+steps.append({'step': 'runPHP', 'code': "<?php require_once '/wordpress/wp-load.php'; flush_rewrite_rules( true );"})
 
 blueprint = {
     '$schema': 'https://playground.wordpress.net/blueprint-schema.json',

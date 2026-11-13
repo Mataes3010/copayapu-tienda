@@ -304,27 +304,27 @@
     },
     {
       "step": "runPHP",
-      "code": "<?php define('CPY_ASSETS', '/wordpress/wp-content/copayapu/assets/'); define('CPY_SETUP', '/wordpress/wp-content/copayapu/setup/'); require_once 'wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; require '/wordpress/wp-content/copayapu/setup/01-configuracion.php';"
+      "code": "<?php define('CPY_ASSETS', '/wordpress/wp-content/copayapu/assets/'); define('CPY_SETUP', '/wordpress/wp-content/copayapu/setup/'); require_once '/wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; require '/wordpress/wp-content/copayapu/setup/01-configuracion.php';"
     },
     {
       "step": "runPHP",
-      "code": "<?php define('CPY_ASSETS', '/wordpress/wp-content/copayapu/assets/'); define('CPY_SETUP', '/wordpress/wp-content/copayapu/setup/'); require_once 'wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; require '/wordpress/wp-content/copayapu/setup/02-catalogo.php';"
+      "code": "<?php define('CPY_ASSETS', '/wordpress/wp-content/copayapu/assets/'); define('CPY_SETUP', '/wordpress/wp-content/copayapu/setup/'); require_once '/wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; require '/wordpress/wp-content/copayapu/setup/02-catalogo.php';"
     },
     {
       "step": "runPHP",
-      "code": "<?php define('CPY_ASSETS', '/wordpress/wp-content/copayapu/assets/'); define('CPY_SETUP', '/wordpress/wp-content/copayapu/setup/'); require_once 'wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; require '/wordpress/wp-content/copayapu/setup/03-operacion.php';"
+      "code": "<?php define('CPY_ASSETS', '/wordpress/wp-content/copayapu/assets/'); define('CPY_SETUP', '/wordpress/wp-content/copayapu/setup/'); require_once '/wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; require '/wordpress/wp-content/copayapu/setup/03-operacion.php';"
     },
     {
       "step": "runPHP",
-      "code": "<?php define('CPY_ASSETS', '/wordpress/wp-content/copayapu/assets/'); define('CPY_SETUP', '/wordpress/wp-content/copayapu/setup/'); require_once 'wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; require '/wordpress/wp-content/copayapu/setup/04-ajustes-visuales.php';"
+      "code": "<?php define('CPY_ASSETS', '/wordpress/wp-content/copayapu/assets/'); define('CPY_SETUP', '/wordpress/wp-content/copayapu/setup/'); require_once '/wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; require '/wordpress/wp-content/copayapu/setup/04-ajustes-visuales.php';"
     },
     {
       "step": "runPHP",
-      "code": "<?php define('CPY_ASSETS', '/wordpress/wp-content/copayapu/assets/'); define('CPY_SETUP', '/wordpress/wp-content/copayapu/setup/'); require_once 'wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; require '/wordpress/wp-content/copayapu/setup/05-pagos.php';"
+      "code": "<?php define('CPY_ASSETS', '/wordpress/wp-content/copayapu/assets/'); define('CPY_SETUP', '/wordpress/wp-content/copayapu/setup/'); require_once '/wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; require '/wordpress/wp-content/copayapu/setup/05-pagos.php';"
     },
     {
       "step": "runPHP",
-      "code": "<?php require_once 'wordpress/wp-load.php'; flush_rewrite_rules( true );"
+      "code": "<?php require_once '/wordpress/wp-load.php'; flush_rewrite_rules( true );"
     }
   ]
 }
