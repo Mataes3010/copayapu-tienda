@@ -12,7 +12,8 @@ E-Commerce (TIEL25) de INACAP. Copayapu es un **negocio ficticio** creado con fi
 WordPress Playground es un servicio oficial de WordPress.org que ejecuta el sitio completo en el navegador.
 Al abrir el enlace, la tienda se instala automáticamente; puede tardar alrededor de un minuto.
 La sesión inicia como administrador, por lo que también se puede revisar el panel en `/wp-admin`.
-Los cambios no se guardan entre visitas.
+Los cambios no se guardan entre visitas. En esta demostración el pago de prueba se hace por transferencia,
+porque Playground no permite la conexión directa con Transbank; el pago con Webpay Plus se probó en la instalación local.
 
 ## Qué incluye
 

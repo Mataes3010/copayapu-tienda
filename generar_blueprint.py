@@ -39,7 +39,7 @@ for php in sorted((root / 'setup').glob('*.php')):
                   'data': {'resource': 'url', 'url': f'{base}setup/{php.name}'}})
 steps.append({'step': 'writeFile', 'path': '/wordpress/wp-content/mu-plugins/copayapu-checkout.php',
               'data': {'resource': 'url', 'url': f'{base}setup/copayapu-checkout.php'}})
-for script in ['01-configuracion.php', '02-catalogo.php', '03-operacion.php', '04-ajustes-visuales.php', '05-pagos.php']:
+for script in ['01-configuracion.php', '02-catalogo.php', '03-operacion.php', '04-ajustes-visuales.php', '05-pagos.php', '06-playground.php']:
     steps.append({'step': 'runPHP', 'code':
                   f"<?php define('CPY_ASSETS', '{DEST}/assets/'); define('CPY_SETUP', '{DEST}/setup/'); "
                   f"require_once '/wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; "
@@ -78,7 +78,8 @@ E-Commerce (TIEL25) de INACAP. Copayapu es un **negocio ficticio** creado con fi
 WordPress Playground es un servicio oficial de WordPress.org que ejecuta el sitio completo en el navegador.
 Al abrir el enlace, la tienda se instala automáticamente; puede tardar alrededor de un minuto.
 La sesión inicia como administrador, por lo que también se puede revisar el panel en `/wp-admin`.
-Los cambios no se guardan entre visitas.
+Los cambios no se guardan entre visitas. En esta demostración el pago de prueba se hace por transferencia,
+porque Playground no permite la conexión directa con Transbank; el pago con Webpay Plus se probó en la instalación local.
 
 ## Qué incluye
 

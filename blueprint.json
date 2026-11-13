@@ -288,6 +288,14 @@
     },
     {
       "step": "writeFile",
+      "path": "/wordpress/wp-content/copayapu/setup/06-playground.php",
+      "data": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/Mataes3010/copayapu-tienda/main/setup/06-playground.php"
+      }
+    },
+    {
+      "step": "writeFile",
       "path": "/wordpress/wp-content/copayapu/setup/copayapu-checkout.php",
       "data": {
         "resource": "url",
@@ -321,6 +329,10 @@
     {
       "step": "runPHP",
       "code": "<?php define('CPY_ASSETS', '/wordpress/wp-content/copayapu/assets/'); define('CPY_SETUP', '/wordpress/wp-content/copayapu/setup/'); require_once '/wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; require '/wordpress/wp-content/copayapu/setup/05-pagos.php';"
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php define('CPY_ASSETS', '/wordpress/wp-content/copayapu/assets/'); define('CPY_SETUP', '/wordpress/wp-content/copayapu/setup/'); require_once '/wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/plugin.php'; require '/wordpress/wp-content/copayapu/setup/06-playground.php';"
     },
     {
       "step": "runPHP",
